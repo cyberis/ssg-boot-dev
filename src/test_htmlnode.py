@@ -76,3 +76,6 @@ class TestHTMLNode(unittest.TestCase):
             doc_fragment.to_html(),
             '<div id="doc-fragment"><div id="about-us"><div class="section"><p>Paragraph 1</p><p>Paragraph 2</p></div><div class="section"><p>Paragraph 3</p><p>Paragraph 4</p></div></div></div>',
         )
+        
+if __name__ == '__main__':
+    unittest.main()
