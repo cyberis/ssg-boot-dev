@@ -222,6 +222,31 @@ class TestNodes(unittest.TestCase):
         with self.assertRaises(ValueError):
             text_to_textnodes(text)
             
+    # Test Case 4 - Nested Formatting (should not be supported)
+    def test_text_to_textnodes_4(self):
+        text = "This is _italic and **bold** text_"
+        with self.assertRaises(ValueError):
+            text_to_textnodes(text)
+            
+    # Test Case 5 - Link at the Start
+    def test_text_to_textnodes_5(self):
+        text = "[Start Link](https://start.com) followed by text."
+        new_nodes = text_to_textnodes(text)
+        expected_nodes = [
+            TextNode("Start Link", TextType.LINK, "https://start.com"),
+            TextNode(" followed by text.", TextType.TEXT),
+        ]
+        self.assertEqual(new_nodes, expected_nodes)
+        
+    #Test Caste 6 - Image at the End
+    def test_text_to_textnodes_6(self):
+        text = "Text before image ![End Image](https://end.com/image.png)"
+        new_nodes = text_to_textnodes(text)
+        expected_nodes = [
+            TextNode("Text before image ", TextType.TEXT),
+            TextNode("End Image", TextType.IMAGE, "https://end.com/image.png"),
+        ]
+        self.assertEqual(new_nodes, expected_nodes)
         
 if __name__ == '__main__':
     unittest.main()
