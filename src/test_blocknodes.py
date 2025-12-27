@@ -1,5 +1,6 @@
 import unittest
-from blocknodes import markdown_to_blocks
+from blocknode import BlockType
+from blocknodes import markdown_to_blocks, block_to_block_type
 
 class TestBlockNodes(unittest.TestCase):
     def test_markdown_to_blocks_complex(self):
@@ -92,6 +93,66 @@ Here is an image: ![Alt text](https://example.com/image.png) and a [link](https:
         ]
         self.assertEqual(blocks, expected_blocks)
         
+    def test_block_type_detection_heading(self):
+        block1 = "# This is a heading"
+        block_type1 = block_to_block_type(block1)
+        self.assertEqual(block_type1, BlockType.HEADING)
+        block2 = "## Subheading"
+        block_type2 = block_to_block_type(block2)
+        self.assertEqual(block_type2, BlockType.HEADING)
+        block3 = "###### Smallest heading"
+        block_type3 = block_to_block_type(block3)
+        self.assertEqual(block_type3, BlockType.HEADING)
+        
+    def test_block_type_detection_unordered_list(self):
+        block = "- Item one\n- Item two\n- Item three"
+        block_type = block_to_block_type(block)
+        self.assertEqual(block_type, BlockType.UNORDERED_LIST)
+        
+    def test_block_type_detection_ordered_list(self):
+        block = "1. First item\n2. Second item\n3. Third item"
+        block_type = block_to_block_type(block)
+        self.assertEqual(block_type, BlockType.ORDERED_LIST)
+        
+    def test_block_type_detection_code_block(self):
+        block = "```\ndef example():\n    return True\n```"
+        block_type = block_to_block_type(block)
+        self.assertEqual(block_type, BlockType.CODE_BLOCK)
+        
+    def test_block_type_detection_blockquote(self):
+        block = "> This is a quote.\n> It spans multiple lines."
+        block_type = block_to_block_type(block)
+        self.assertEqual(block_type, BlockType.BLOCKQUOTE)
+        
+    def test_block_type_detection_paragraph(self):
+        block = "This is a regular paragraph without any special formatting."
+        block_type = block_to_block_type(block)
+        self.assertEqual(block_type, BlockType.PARAGRAPH)
+        
+    def test_block_type_detection_malformed_heading(self):
+        block = "####### Too many hashes for a heading"
+        block_type = block_to_block_type(block)
+        self.assertEqual(block_type, BlockType.PARAGRAPH)
+        
+    def test_block_type_detection_malformed_unordered_list(self):
+        block = "- This is a valid unordered list item\n* but this is not"
+        block_type = block_to_block_type(block)
+        self.assertEqual(block_type, BlockType.PARAGRAPH)
+        
+    def test_block_type_detection_malformed_ordered_list(self):
+        block = "10. This is not a valid ordered list item"
+        block_type = block_to_block_type(block)
+        self.assertEqual(block_type, BlockType.PARAGRAPH)
+        
+    def test_block_type_detection_incomplete_code_block(self):
+        block = "```\ndef example():\n    return True"
+        block_type = block_to_block_type(block)
+        self.assertEqual(block_type, BlockType.PARAGRAPH)
+        
+    def test_block_type_detection_incomplete_blockquote(self):
+        block = "> This is a quote.\nThis line is not part of the quote."
+        block_type = block_to_block_type(block)
+        self.assertEqual(block_type, BlockType.PARAGRAPH)
 
 if __name__ == '__main__':
     unittest.main()
