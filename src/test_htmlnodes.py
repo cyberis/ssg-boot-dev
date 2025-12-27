@@ -3,7 +3,7 @@ from htmlnode import LeafNode
 from textnode import TextNode, TextType
 from htmlnodes import text_node_to_html_node
 
-class TestNodes(unittest.TestCase):
+class TestHtmlNodes(unittest.TestCase):
     def test_text_node_to_html_node_text(self):
         text_node = TextNode("Just some text", TextType.TEXT)
         html_node = text_node_to_html_node(text_node)

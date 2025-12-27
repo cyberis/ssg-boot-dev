@@ -9,7 +9,7 @@ from textnodes import (
     text_to_textnodes,
 )
 
-class TestNodes(unittest.TestCase):
+class TestTextNodes(unittest.TestCase):
     def test_delim_code(self):
         node = TextNode("This is text with a `code block` word", TextType.TEXT)
         new_nodes = split_nodes_delimiter([node], "`", TextType.CODE)
