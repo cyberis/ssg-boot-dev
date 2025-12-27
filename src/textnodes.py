@@ -27,19 +27,11 @@ def extract_markdown_images(text):
     pattern = r'!\[([^\]]*)\]\(([^)]+)\)'
     matches = re.findall(pattern, text)
     return matches
-    images = []
-    for alt_text, url in matches:
-        images.append(TextNode(alt_text, TextType.IMAGE, url))
-    return images
 
 def extract_markdown_links(text):
     pattern = r'\[([^\]]+)\]\(([^)]+)\)'
     matches = re.findall(pattern, text)
     return matches
-    links = []
-    for link_text, url in matches:
-        links.append(TextNode(link_text, TextType.LINK, url))
-    return links
 
 def split_nodes_image(old_nodes):
     new_nodes = []
@@ -65,8 +57,6 @@ def split_nodes_image(old_nodes):
                 i += 3
             else:
                 break
-        #if i == len(parts) - 1 and parts[i]:
-        #    new_nodes.append(TextNode(parts[i], TextType.TEXT))
     return new_nodes
 
 def split_nodes_link(old_nodes):
@@ -93,8 +83,6 @@ def split_nodes_link(old_nodes):
                 i += 3
             else:
                 break
-        #if i == len(parts) - 1 and parts[i]:
-        #    new_nodes.append(TextNode(parts[i], TextType.TEXT))
     return new_nodes
 
 def text_to_textnodes(text):
