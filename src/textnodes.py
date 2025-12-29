@@ -1,5 +1,6 @@
 import re
 from textnode import TextNode, TextType
+from blocknode import BlockNode, BlockType
 
 def split_nodes_delimiter(old_nodes, delimiter, text_type):
     new_nodes = []
@@ -93,3 +94,60 @@ def text_to_textnodes(text):
     new_nodes = split_nodes_image(new_nodes)
     new_nodes = split_nodes_link(new_nodes)
     return new_nodes
+
+def block_create_textnodes(block_node):
+    if not isinstance(block_node, BlockNode):
+        raise ValueError("Input must be a BlockNode")
+    child_text_nodes = []
+    block_type = block_node.block_type
+    match block_type:
+        case BlockType.HEADING:
+            level = len(re.match(r'^(#+)', block_node.content).group(1))
+            block_node.props['level'] = level
+            text = re.sub(r'^#{1,6} ', '', block_node.content)
+            text_node = TextNode(text, TextType.TEXT)
+            child_text_nodes.append(text_node)
+        case BlockType.PARAGRAPH:
+            # Combine all lines into a single paragraph text
+            text = ""
+            for line in block_node.content.splitlines():
+                text += line.strip() + " "
+            text_nodes = text_to_textnodes(text.strip())
+            child_text_nodes.extend(text_nodes)
+        case BlockType.UNORDERED_LIST:
+            lines = block_node.content.splitlines()
+            if not block_node.child_blocks:
+                block_node.child_blocks = []
+            for line in lines:
+                text = re.sub(r'^- ', '', line)
+                child_block = BlockNode(text, BlockType.LIST_ITEM)
+                child_block = block_create_textnodes(child_block)
+                block_node.child_blocks.append(child_block)
+        case BlockType.ORDERED_LIST:
+            lines = block_node.content.splitlines()
+            if not block_node.child_blocks:
+                block_node.child_blocks = []
+            for line in lines:
+                text = re.sub(r'^\d+\. ', '', line)
+                child_block = BlockNode(text, BlockType.LIST_ITEM)
+                child_block = block_create_textnodes(child_block)
+                block_node.child_blocks.append(child_block)
+        case BlockType.LIST_ITEM:
+            text_nodes = text_to_textnodes(block_node.content)
+            child_text_nodes.extend(text_nodes)
+        case BlockType.CODE_BLOCK:
+            text = re.sub(r'^```', '', block_node.content)
+            text = re.sub(r'```$', '', text)
+            # Remove leading newline if present due to markdown code block formatting
+            if text.startswith('\n'):
+                text = text[1:]
+            text_node = TextNode(text, TextType.TEXT)
+            child_text_nodes.append(text_node)
+        case BlockType.BLOCKQUOTE:
+            lines = block_node.content.splitlines()
+            quote_text = '\n'.join([re.sub(r'^> ?', '', line) for line in lines])
+            text_node = TextNode(quote_text, TextType.TEXT)
+            child_text_nodes.append(text_node)
+    
+    block_node.text_nodes = child_text_nodes
+    return block_node

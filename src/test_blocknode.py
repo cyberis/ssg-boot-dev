@@ -19,7 +19,7 @@ class TestBlockNode(unittest.TestCase):
         
     def test_repr(self):
         block = BlockNode("This is a heading.", BlockType.HEADING)
-        self.assertEqual(repr(block), "BlockNode(This is a heading., heading)")
+        self.assertEqual(repr(block), "BlockNode(content=This is a heading., type=heading, child_blocks=None, text_nodes=None, props=None)")
         
 if __name__ == '__main__':
     unittest.main()

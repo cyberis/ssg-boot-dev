@@ -1,6 +1,7 @@
+from platform import node
 import unittest
 from blocknode import BlockType
-from blocknodes import markdown_to_blocks, block_to_block_type
+from blocknodes import markdown_to_blocks, block_to_block_type, markdown_to_html_node
 
 class TestBlockNodes(unittest.TestCase):
     def test_markdown_to_blocks_complex(self):
@@ -153,6 +154,63 @@ Here is an image: ![Alt text](https://example.com/image.png) and a [link](https:
         block = "> This is a quote.\nThis line is not part of the quote."
         block_type = block_to_block_type(block)
         self.assertEqual(block_type, BlockType.PARAGRAPH)
+        
+    def test_paragraphs(self):
+        md = """
+This is **bolded** paragraph
+text in a p
+tag here
 
+This is another paragraph with _italic_ text and `code` here
+
+"""
+        node = markdown_to_html_node(md)
+        html = node.to_html()
+        expected_html = (
+            "<div><p>This is <b>bolded</b> paragraph text in a p tag here</p>"
+            "<p>This is another paragraph with <i>italic</i> text and <code>code</code> here</p></div>"
+        )
+        self.assertEqual(html,expected_html)
+        
+    def test_codeblock(self):
+        md = """
+```
+This is text that _should_ remain
+the **same** even with inline stuff
+```
+"""
+        node = markdown_to_html_node(md)
+        html = node.to_html()
+        expected_html = (
+            "<div><pre><code>This is text that _should_ remain\nthe **same** even with inline stuff\n</code></pre></div>"
+        )
+        self.assertEqual(html, expected_html)
+    
+    def test_lists(self):
+        md = """
+This is a paragraph before **the list**.
+
+- This is a list
+- with items
+
+This is a paragraph _between_ lists.
+
+1. First item
+2. Second item
+3. Third item
+
+This is a paragraph after the lists.
+"""
+        node = markdown_to_html_node(md)
+        html = node.to_html()
+        expected_html = (
+            "<div><p>This is a paragraph before <b>the list</b>.</p>"
+            "<ul><li>This is a list</li><li>with items</li></ul>"
+            "<p>This is a paragraph <i>between</i> lists.</p>"
+            "<ol><li>First item</li><li>Second item</li><li>Third item</li></ol>"
+            "<p>This is a paragraph after the lists.</p></div>"
+        )
+        self.assertEqual(html, expected_html)
+    
 if __name__ == '__main__':
     unittest.main()
