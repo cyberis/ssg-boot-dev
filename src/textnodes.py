@@ -103,6 +103,8 @@ def block_create_textnodes(block_node):
     match block_type:
         case BlockType.HEADING:
             level = len(re.match(r'^(#+)', block_node.content).group(1))
+            if not block_node.props:
+                block_node.props = {}
             block_node.props['level'] = level
             text = re.sub(r'^#{1,6} ', '', block_node.content)
             text_node = TextNode(text, TextType.TEXT)
@@ -145,9 +147,9 @@ def block_create_textnodes(block_node):
             child_text_nodes.append(text_node)
         case BlockType.BLOCKQUOTE:
             lines = block_node.content.splitlines()
-            quote_text = '\n'.join([re.sub(r'^> ?', '', line) for line in lines])
-            text_node = TextNode(quote_text, TextType.TEXT)
-            child_text_nodes.append(text_node)
+            quote_text = ' '.join([re.sub(r'^> ?', '', line) for line in lines])
+            text_nodes = text_to_textnodes(quote_text.strip())
+            child_text_nodes.extend(text_nodes)
     
     block_node.text_nodes = child_text_nodes
     return block_node

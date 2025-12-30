@@ -212,5 +212,57 @@ This is a paragraph after the lists.
         )
         self.assertEqual(html, expected_html)
     
+    def test_blockquotes(self):
+        md = """
+> This is a blockquote. `print("Hello")`
+> Dude, I'm quoting!
+
+Good stuff dude.    
+"""
+        node = markdown_to_html_node(md)
+        html = node.to_html()
+        expected_html = (
+            "<div><blockquote>This is a blockquote. <code>print(\"Hello\")</code> Dude, I'm quoting!</blockquote><p>Good stuff dude.</p></div>"
+        )
+        self.assertEqual(html, expected_html)
+
+    def test_headings(self):
+        md = """
+# Heading 1
+
+Here is some text under heading 1.
+
+## Heading 2
+"""
+        node = markdown_to_html_node(md)
+        html = node.to_html()
+        expected_html = (
+            "<div><h1>Heading 1</h1><p>Here is some text under heading 1.</p><h2>Heading 2</h2></div>"
+        )
+        self.assertEqual(html, expected_html)
+        
+    def test_images_and_links(self):
+        md = """
+Here is an image: ![Alt text](https://example.com/image.png) and a [link](https://example.com).
+"""
+        node = markdown_to_html_node(md)
+        html = node.to_html()
+        expected_html = (
+            "<div><p>Here is an image: <img src=\"https://example.com/image.png\" alt=\"Alt text\"></img> and a <a href=\"https://example.com\">link</a>.</p></div>"
+        )
+        self.assertEqual(html, expected_html)
+    
+    def test_menu_links_in_unordered_list(self):
+        md = """
+- [Home](https://example.com/home)
+- [About](https://example.com/about)
+"""
+        node = markdown_to_html_node(md)
+        html = node.to_html()
+        expected_html = (
+            "<div><ul><li><a href=\"https://example.com/home\">Home</a></li><li><a href=\"https://example.com/about\">About</a></li></ul></div>"
+        )
+        self.assertEqual(html, expected_html)
+    
 if __name__ == '__main__':
     unittest.main()
