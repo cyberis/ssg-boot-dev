@@ -1,8 +1,11 @@
-from textnode import TextType, TextNode
+from filer import copy_static_files
 
 def main():
-    tn = TextNode("This is some anchor text", TextType.LINK, "https://www.boot.dev")
-    print(tn)
+    print("Begin Site Genereation")
+    
+    print("Copying Static Files...")
+    copy_static_files("static", "public", clear_dest=True)
+    print("Static Files Copied.")
     
 if __name__ == "__main__":
     main()
