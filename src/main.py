@@ -1,5 +1,5 @@
 from filer import copy_static_files
-from generator import generate_page 
+from generator import generate_pages_recursively 
 
 def main():
     print("Begin Site Genereation")
@@ -9,7 +9,7 @@ def main():
     print("Static Files Copied.")
     
     print("Generating Pages...")
-    generate_page("content/index.md", "template.html", "public/index.html")
+    generate_pages_recursively("content", "template.html", "public")
     print("Pages Generated.")
     
 if __name__ == "__main__":

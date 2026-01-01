@@ -34,3 +34,19 @@ def generate_page(from_path, template_path, dest_path):
     
     with open(dest_path, 'w', encoding='utf-8') as f:
         f.write(html_content)
+        
+def generate_pages_recursively(dir_path_content, template_path, dest_dir):
+    dir_path_content = Path(dir_path_content)
+    dest_dir = Path(dest_dir)
+    
+    for root, dirs, files in os.walk(dir_path_content):
+        relative_root = Path(root).relative_to(dir_path_content)
+        target_root = dest_dir / relative_root
+        
+        for file in files:
+            if file.endswith('.md'):
+                from_path = Path(root) / file
+                dest_file_name = file[:-3] + '.html'
+                dest_path = target_root / dest_file_name
+                
+                generate_page(from_path, template_path, dest_path)
